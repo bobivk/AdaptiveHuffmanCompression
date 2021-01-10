@@ -8,10 +8,8 @@ HuffmanTree::~HuffmanTree() {
 	delete[] nodes;
 }
 
-void HuffmanTree::updateTree(Node* from) {
-	while (from != root) {
+void HuffmanTree::updateTree(int fromOrder) {
 
-	}
 }
 
 //Creates new NYT on the left of old NYT
@@ -36,11 +34,11 @@ bool HuffmanTree::firstReadOf(int symbol) {
 void HuffmanTree::insertSymbol(int symbol) {
 	if (firstReadOf(symbol)) {
 		createNewNode(symbol);
-		updateTree(leaves[symbol]);
 	}
 	else {
-
+		++leaves[symbol]->weight;
 	}
+	updateTree(leaves[symbol]->order);
 }
 
 void HuffmanTree::swapNodes(Node* lhs, Node* rhs) {

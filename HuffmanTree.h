@@ -14,7 +14,7 @@ struct HuffmanTree
 	void createNewNode(int symbol);
 	bool firstReadOf(int symbol);
 	void insertSymbol(int symbol);
-	void updateTree(Node* from);
+	void updateTree(int fromOrder);
 	void swapNodes(Node*, Node*);
 };
 
