@@ -1,7 +1,8 @@
 #pragma once
-#include<string>
-#include<vector>
-#include"Node.h"
+#include <string>
+#include <vector>
+#include <boost/dynamic_bitset.hpp>
+#include "Node.h"
 
 /*
 key verbs:
@@ -14,7 +15,7 @@ swap,
 isRoot,
 move to parent
 */
-
+const int PSEUDO_EOF = 256;
 
 struct HuffmanTree
 {

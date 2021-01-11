@@ -1,5 +1,6 @@
 #pragma once
 #include<utility> //std::swap
+#include<iostream>
 /*
 Tree must have the following invariants:
 -Each node has a sibling

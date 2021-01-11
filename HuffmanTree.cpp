@@ -114,6 +114,7 @@ void reversePath(std::vector<bool>& path) {
 }
 
 std::vector<bool> HuffmanTree::getPathToNode(Node* node) {
+	//we get path to root and then reverse it
 	std::vector<bool> result;
 	while (node != root) {
 		if (node->isLeftChild()) {

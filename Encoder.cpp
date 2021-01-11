@@ -1,54 +1,54 @@
-#include<iostream>
-#include<fstream>
-#include<vector>
-#include"HuffmanTree.h"
+#include"Encoder.h"
 
 
-//char of value 256 marks the end of the file
-const int PSEUDO_EOF = 256;
-
-struct Encoder {
-
-	HuffmanTree tree;
-
-	void writePathToFile(std::vector<bool>& path, std::ofstream& out, char& byte, int& bitNumber) {
-		for (int i = bitNumber; i < path.size(); ++i) {
-			if (i != 0 && i % 8 == 0) {
-				out.write((const char*)byte, sizeof(byte));
-				byte = 0;
-				bitNumber = 0;
-			}
-			byte <<= 1;
-			byte |= path[i];
-			++bitNumber;
+void Encoder::writePathToFile(std::vector<bool>& path, std::ofstream& out, char& byte, int& bitNumber) {
+	for (int i = bitNumber; i < path.size(); ++i) {
+		if (i != 0 && i % 8 == 0) {
+			out.write((char*)byte, sizeof(byte));
+			byte = 0;
+			bitNumber = 0;
 		}
+		byte <<= 1;
+		byte |= path[i];
+		++bitNumber;
 	}
-	void encode(const std::string inputFile, const std::string outputFile) {
-		std::ifstream input(inputFile);
-		std::ofstream output(outputFile, std::ios::binary);
-		char remainder{ 0 };
-		int bitNumber{ 0 };
-		while (input.peek()) {
-			int x = int(input.get());
-			if (tree.firstReadOf(x)) {
-				//output NYT path followed by x in binary
-				std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
-				writePathToFile(NYTpath, output, remainder, bitNumber);
-				output.write((const char*)x, sizeof(x));
-			}else {
-				//output path to the leaf of x
-				std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
-				writePathToFile(nodePath, output, remainder, bitNumber);
-			}
-			tree.insertSymbol(x);
+}
+/*
+void Encoder::encode(const std::string inputFile, const std::string outputFile) {
+	std::ifstream input(inputFile);
+	std::ofstream output(outputFile, std::ios::binary);
+
+}
+*/
+
+void Encoder::encode(const std::string inputFile, const std::string outputFile) {
+	std::ifstream input(inputFile);
+	std::ofstream output(outputFile, std::ios::binary);
+	char remainder{ 0 };
+	int bitNumber{ 0 };
+	while (input.peek()) {
+		int x = int(input.get());
+		if (tree.firstReadOf(x)) {
+			//output NYT path followed by x in binary
+			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
+			writePathToFile(NYTpath, output, remainder, bitNumber);
+			output.write((const char*)x, sizeof(x));
 		}
-		if (remainder) {
-			for (int i = 0; i < (8 - bitNumber); ++i) {
-				remainder <<= 1;
-			}
+		else {
+			//output path to the leaf of x
+			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
+			writePathToFile(nodePath, output, remainder, bitNumber);
 		}
+		tree.insertSymbol(x);
 	}
-};
+	if (remainder) {
+		for (int i = 0; i < (8 - bitNumber); ++i) {
+			remainder <<= 1;
+		}
+		output.write((char*)remainder, sizeof(remainder));
+		output.write((char*)PSEUDO_EOF, sizeof(PSEUDO_EOF));
+	}
+}
 
 
 /*
