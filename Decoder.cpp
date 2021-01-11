@@ -9,7 +9,7 @@ void getPathFromFile(std::vector<bool>& path, std::stack<bool>& st, std::ifstrea
 	}
 }
 */
-
+/*
 void Decoder::decode(std::string inputFile, std::string outputFile) {
 	std::ifstream input(inputFile, std::ios::in|std::ios::binary|std::ios::ate);
 	std::ofstream output(outputFile);
@@ -58,4 +58,3 @@ void Decoder::decode(std::string inputFile, std::string outputFile) {
 	}
 	*/
 
-}

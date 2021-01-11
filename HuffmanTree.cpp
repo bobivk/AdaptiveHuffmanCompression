@@ -4,35 +4,102 @@
 HuffmanTree::HuffmanTree() {
 	root = new Node(-1, 0, nullptr, nullptr, nullptr);
 	NYTNode = root;
+	nodes = std::vector<Node*>(513, nullptr);
+	leaves = std::vector<Node*>(257, nullptr);
+	nodes[512] = root;
 }
-HuffmanTree::~HuffmanTree() {
-	delete[] nodes;
-}
-
+// [  , , 1, 1, 1, 2, 2, 3, 4]
+//       506    508 509 510 511 512 
 
 int HuffmanTree::findOrderOfBlockLeader(int orderOfCurrent) {
-	for (int i = orderOfCurrent; i < 511; ++i) {
-		if (nodes[i]->weight > nodes[orderOfCurrent]->weight) return orderOfCurrent;
-		if (nodes[i]->weight < nodes[i + 1]->weight && nodes[i]->weight == nodes[orderOfCurrent]->weight) {
-			if (nodes[orderOfCurrent]->parent == nodes[i] || nodes[orderOfCurrent] == root) {
-				return orderOfCurrent;
-			}
-			else return i;
+	for (int i = orderOfCurrent + 1; i < 511; ++i) {
+
+		if (nodes[i]->weight < nodes[i + 1]->weight //block leader
+			&& nodes[i]->weight == nodes[orderOfCurrent]->weight) {// block lead is in the same block
+			
+			return i;
 		}
+		if (nodes[i]->weight > nodes[orderOfCurrent]->weight) return orderOfCurrent;
 	}
 	return orderOfCurrent;
 }
+/*
+void HuffmanTree::updateTree(int fromOrder) {
+	if (fromOrder == 512) {
+		++root->weight;
+		return;
+	}
+	int orderOfBlockLeader = findOrderOfBlockLeader(fromOrder);
+	std::cout << "Increment weight of " << fromOrder << std::endl;
+	if (orderOfBlockLeader != fromOrder) {
+		std::cout << "swapping " << fromOrder << " with  " << orderOfBlockLeader << std::endl;
+		swapNodes(nodes[fromOrder], nodes[orderOfBlockLeader]);
+	}
+	//after swapping our current node's order is 'orderOfBlockLeader'
+	++nodes[fromOrder]->weight;
+	updateTree(nodes[orderOfBlockLeader]->parent->order);
+}
+
+procedure Update;
+begin
+leaf ToIncrement := 0;
+q := leaf node corresponding to ai,,, ;
+if (q is the O-node) and (k < n - 1) then
+begin 1 Special Case # 1)
+Replace q by an internal O-node with two leaf O-node children, such that the right child
+corresponds to at,,, ;
+q := internal O-node just created;
+leaf ToIncrement := the right child of q
+end
+else begin
+Interchange q in the tree with the leader of its block;
+if q is the sibling of the O-node then
+begin {Special Case #2)
+leaf ToIncrement := q;
+q := parent of q
+end
+end;
+
+
+while q is not the root of the Huffman tree do
+(Main loop; q must he the leader of its block]
+SlideAndZncrement(q);
+if leaf Tolncrement # 0 then (Handle the two special cases)
+SlideAndIncrement(leaf ToIncrement)
+end;
+procedure SlideAndIncrement(p);
+begin
+wt := weight of p;
+b := block following p’s block in the linked list;
+if ((p is a leaf) and (b is the block of internal nodes of weight wt))
+or ((p is an internal node) and
+(b is the block of leaves of weight wt + 1)) then
+begin
+Slide p in the tree ahead of the nodes in b;
+p’s weight := wt + 1;
+if p is a leaf then p := new parent of p
+else p := former parent of p
+end
+end:
+
+
+*/
 
 void HuffmanTree::updateTree(int fromOrder) {
-	if (fromOrder == 512) return; //root
-	int orderOfBlockLeader = findOrderOfBlockLeader(fromOrder);
-	++nodes[fromOrder]->weight;
-	if (orderOfBlockLeader != fromOrder) {
-		swapNodes(nodes[fromOrder], nodes[orderOfBlockLeader]);
-		//after swapping our current node's order is 'orderOfBlockLeader'
-		updateTree(nodes[orderOfBlockLeader]->parent->order);
+	if (fromOrder == 512) {
+		++root->weight;
+		return;
+	}
+	int blockLeaderOrder = findOrderOfBlockLeader(fromOrder);
+	if (blockLeaderOrder == fromOrder) {
+		++nodes[fromOrder]->weight;
+	}
+	else {
+		std::cout << "Swapping nodes " << fromOrder << " " << blockLeaderOrder << "\n";
+		swapNodes(nodes[fromOrder], nodes[blockLeaderOrder]);
 	}
 }
+
 
 //Creates new NYT on the left of old NYT
 //and creates a new leaf node of symbol
@@ -40,7 +107,7 @@ void HuffmanTree::updateTree(int fromOrder) {
 void HuffmanTree::createNewNode(int symbol) {
 
 	//creates the NYT node last so correct ordering is maintained
-	Node* newLeaf = new Node(symbol, 1, nullptr, nullptr, NYTNode);
+	Node* newLeaf = new Node(symbol, 0, nullptr, nullptr, NYTNode);
 	nodes[newLeaf->order] = newLeaf;
 	Node* newNYT = new Node(-1, 0, nullptr, nullptr, NYTNode);
 	nodes[newNYT->order] = newNYT;
@@ -56,9 +123,6 @@ bool HuffmanTree::firstReadOf(int symbol) {
 void HuffmanTree::insertSymbol(int symbol) {
 	if (firstReadOf(symbol)) {
 		createNewNode(symbol);
-	}
-	else {
-		++leaves[symbol]->weight;
 	}
 	updateTree(leaves[symbol]->order);
 }
