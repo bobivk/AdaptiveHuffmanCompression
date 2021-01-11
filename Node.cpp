@@ -24,6 +24,9 @@
 	bool Node::isInner() {
 		return !isLeaf();
 	}
+	bool Node::isLeftChild() {
+		return this->parent->left == this;
+	}
 
 int Node::LOWEST_ORDER{ 512 };
 /*

@@ -3,17 +3,6 @@
 #include<vector>
 #include"HuffmanTree.h"
 
-/*
-key verbs:
-
-insert new value,
-give birth to new nodes,
-update weight,
-check if max in weight class,
-swap,
-isRoot,
-move to parent
-*/
 
 //char of value 256 marks the end of the file
 const int PSEUDO_EOF = 256;
@@ -22,34 +11,42 @@ struct Encoder {
 
 	HuffmanTree tree;
 
-	
-
-	void encode(std::string inputFile, std::string outputFile) {
-		std::ifstream input(inputFile);
-		std::ofstream output(outputFile);
-
-		while (input.peek()) {
-			int x = int(input.get());
-			tree.insertSymbol(x);
-			if (tree.firstReadOf(x)) {
-				//output NYT code followed by code of x
+	void writePathToFile(std::vector<bool>& path, std::ofstream& out, char& byte, int& bitNumber) {
+		for (int i = bitNumber; i < path.size(); ++i) {
+			if (i != 0 && i % 8 == 0) {
+				out.write((const char*)byte, sizeof(byte));
+				byte = 0;
+				bitNumber = 0;
 			}
-			else {
-				//output code of x
-			}
-			//addCharToTree(x);
+			byte <<= 1;
+			byte |= path[i];
+			++bitNumber;
 		}
 	}
-
-	void slideAndIncrement(Node* current) {
-		if (current == nullptr) return;
-		Node* blockLeader = current;
-		//findBlockLeader(root, current);
-		if (blockLeader != current) {
-			//swapNodes(blockLeader, current);
+	void encode(const std::string inputFile, const std::string outputFile) {
+		std::ifstream input(inputFile);
+		std::ofstream output(outputFile, std::ios::binary);
+		char remainder{ 0 };
+		int bitNumber{ 0 };
+		while (input.peek()) {
+			int x = int(input.get());
+			if (tree.firstReadOf(x)) {
+				//output NYT path followed by x in binary
+				std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
+				writePathToFile(NYTpath, output, remainder, bitNumber);
+				output.write((const char*)x, sizeof(x));
+			}else {
+				//output path to the leaf of x
+				std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
+				writePathToFile(nodePath, output, remainder, bitNumber);
+			}
+			tree.insertSymbol(x);
 		}
-		++current->weight;
-		slideAndIncrement(current->parent);
+		if (remainder) {
+			for (int i = 0; i < (8 - bitNumber); ++i) {
+				remainder <<= 1;
+			}
+		}
 	}
 };
 
@@ -61,6 +58,17 @@ struct Encoder {
 			return NYTNode;
 		}
 		else return foundNode->second;
+	}
+
+	void slideAndIncrement(Node* current) {
+		if (current == nullptr) return;
+		Node* blockLeader = current;
+		//findBlockLeader(root, current);
+		if (blockLeader != current) {
+			//swapNodes(blockLeader, current);
+		}
+		++current->weight;
+		slideAndIncrement(current->parent);
 	}
 	void addCharToTree(char x) {
 		Node* nodeOfX = findNodeOf(x);

@@ -31,4 +31,5 @@ struct Node
 	int getWeightOfSibling();
 	bool isLeaf();
 	bool isInner();
+	bool isLeftChild();
 };

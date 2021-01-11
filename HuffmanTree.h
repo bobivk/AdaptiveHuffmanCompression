@@ -1,5 +1,19 @@
 #pragma once
+#include<string>
+#include<vector>
 #include"Node.h"
+
+/*
+key verbs:
+
+insert new value,
+give birth to new nodes,
+update weight,
+check if max in weight class,
+swap,
+isRoot,
+move to parent
+*/
 
 
 struct HuffmanTree
@@ -14,7 +28,10 @@ struct HuffmanTree
 	void createNewNode(int symbol);
 	bool firstReadOf(int symbol);
 	void insertSymbol(int symbol);
+	int findOrderOfBlockLeader(int orderOfCurrent);
+	void setParent(Node* node, Node* newParent);
 	void updateTree(int fromOrder);
 	void swapNodes(Node*, Node*);
+	std::vector<bool> getPathToNode(Node*);
 };
 
