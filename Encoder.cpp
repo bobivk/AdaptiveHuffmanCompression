@@ -39,7 +39,7 @@ void Encoder::encode(const std::string inputFile, const std::string outputFile) 
 			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
 			writePathToFile(nodePath, output, remainder, bitNumber);
 		}
-		tree.insertSymbol(x);
+		tree.updateTree(x);
 	}
 	if (remainder) {
 		for (int i = 0; i < (8 - bitNumber); ++i) {

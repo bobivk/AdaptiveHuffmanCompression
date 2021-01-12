@@ -1,8 +1,8 @@
 ﻿#include<iostream>
-using namespace std;
 #include"Encoder.h"
 #include"Decoder.h"
 
+using namespace std;
 
 
 void printBT(const std::string& prefix, const Node* node, bool isLeft)
@@ -28,40 +28,39 @@ void printBT(const Node* node)
 }
 
 int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
-    for (int i = orderOfCurrent + 1; i < 511; ++i) {
-        if (nodes[i]->weight < nodes[i + 1]->weight //block leader
-            && nodes[i]->weight == nodes[orderOfCurrent]->weight) {// block lead is in the same block
-            
-            return i;
+    int result = orderOfCurrent;
+    for (int i = orderOfCurrent; i < 512; ++i) {
+        if (nodes[i]->weight == nodes[orderOfCurrent]->weight) {
+            result = i;
         }
-        if (nodes[i]->weight > nodes[orderOfCurrent]->weight) return orderOfCurrent;
     }
-    return orderOfCurrent;
+    return result;
 }
 
-int main() {/*
+int main() {
+   
     HuffmanTree tree;
     printBT(tree.root);
-    tree.insertSymbol('a');
+    tree.updateTree('a');
     printBT(tree.root);
-    tree.insertSymbol('a');
+    tree.updateTree('a');
     printBT(tree.root);
-    tree.insertSymbol('r');
+    tree.updateTree('r');
     printBT(tree.root);
-    tree.insertSymbol('d');
+    tree.updateTree('d');
     printBT(tree.root);
-    tree.insertSymbol('v');
+    tree.updateTree('v');
     printBT(tree.root);
-    tree.insertSymbol('a');
+    tree.updateTree('a');
     printBT(tree.root);
-    tree.insertSymbol('r');
+    tree.updateTree('r');
     printBT(tree.root);
-    tree.insertSymbol('k');
+    tree.updateTree('k');
     printBT(tree.root);
-    tree.insertSymbol('a');
+    tree.updateTree('a');
     printBT(tree.root);
-    */
 
+    /*
     vector<Node*> nodes(520, nullptr);
     nodes[512] = new Node(34, 3, nullptr, nullptr, nullptr);
     nodes[511] = new Node(35, 2, nullptr, nullptr, nullptr);
@@ -70,6 +69,7 @@ int main() {/*
     nodes[508] = new Node(38, 1, nullptr, nullptr, nullptr);
     nodes[507] = new Node(39, 1, nullptr, nullptr, nullptr);
     nodes[506] = new Node(40, 1, nullptr, nullptr, nullptr);
-    cout << findOrderOfBlockLeader(nodes, 509);
+    cout << findOrderOfBlockLeader(nodes, 506);
+    */
 	return 0;
 }

@@ -27,9 +27,9 @@ struct HuffmanTree
 	HuffmanTree();
 	void createNewNode(int symbol);
 	bool firstReadOf(int symbol);
-	void insertSymbol(int symbol);
 	int findOrderOfBlockLeader(int orderOfCurrent);
 	void setParent(Node* node, Node* newParent);
+	void setAsBlockLeader(Node*);
 	void updateTree(int fromOrder);
 	void swapNodes(Node*, Node*);
 	std::vector<bool> getPathToNode(Node*);
