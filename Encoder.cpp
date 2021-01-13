@@ -1,30 +1,115 @@
 #include"Encoder.h"
 
 
-void Encoder::writePathToFile(std::vector<bool>& path, std::ofstream& out, char& byte, int& bitNumber) {
-	for (int i = bitNumber; i < path.size(); ++i) {
-		if (i != 0 && i % 8 == 0) {
-			out.write((char*)byte, sizeof(byte));
+void Encoder::writeBitsetToFile(std::vector<bool>* path, std::ofstream& out, unsigned char& byte, int& bitNumber) {
+	for (int i = bitNumber; i < path->size(); ++i) {
+		if (bitNumber != 0 && bitNumber % 8 == 0) {
+			out.write((char*)byte, 8);
 			byte = 0;
 			bitNumber = 0;
 		}
 		byte <<= 1;
-		byte |= path[i];
+		byte |= path->at(i);
 		++bitNumber;
 	}
 }
+void Encoder::addToBitset(std::vector<bool>* bitset, std::vector<bool>& path) {
+	bitset->insert(std::end(*bitset), std::begin(path), std::end(path));
+}
+
+void Encoder::addToBitset(std::vector<bool> *bitset, int x) {
+	std::stack<bool> stack;
+	for (int i = 0; i < 8; ++i) {
+		stack.push((x >> i) & 1);
+	}
+	for (int i = 0; i < 8; ++i) {
+		bitset->push_back(stack.top());
+		stack.pop();
+	}
+}
+
+
+void Encoder::encode(const std::string inputFile, const std::string outputFile) {
+	std::ifstream input(inputFile);
+	std::ofstream output(outputFile, std::ios::binary);
+	auto bitset = new std::vector<bool>();
+
+	while(input.peek()){
+
+		unsigned char x = input.get();
+		if (tree.firstReadOf(x)) {
+			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
+			addToBitset(bitset, NYTpath);
+			addToBitset(bitset, x);
+		}
+		else {
+			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
+			addToBitset(bitset, nodePath);
+		}
+		tree.updateTree(x);
+	}
+	addToBitset(bitset, PSEUDO_EOF);
+	unsigned char byte{ 0 };
+	int bitNumber{ 0 };
+	int tailOfZeroes = bitset->size() % 8;
+	for (int i = 0; i < tailOfZeroes; ++i) 
+		bitset->push_back(0);
+	writeBitsetToFile(bitset, output, byte, bitNumber);
+	delete bitset;
+}
+
+void Encoder::writePathToFileTXT(std::ofstream& out, std::vector<bool>& path, int& bitCount) {
+	if (bitCount == 8) {
+		out << " ";
+		bitCount = 0;
+	}
+	for (auto i : path) {
+		out << i;
+	}
+}
+void Encoder::writeCharToFileTXT(std::ofstream& out, unsigned char x, int& bitCount) {
+	std::stack<bool> stack;
+	for (int i = 0; i < 8; ++i) {
+		stack.push((x >> i) & 1);
+	}
+	for (int i = 0; i < 8; ++i) {
+		if (bitCount == 8) {
+			out << " ";
+			bitCount = 0;
+		}
+		out << stack.top();
+		stack.pop();
+	}
+}
+
+
+void Encoder::encodeToTXT(const std::string inputFile, const std::string outputFile) {
+	std::ifstream input(inputFile);
+	std::ofstream output(outputFile, std::ios::trunc);
+
+	int bitCount = 0;
+	while (input.peek() != EOF) {
+		unsigned char x = input.get();
+		if (tree.firstReadOf(x)) {
+			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
+			writePathToFileTXT(output, NYTpath, bitCount);
+			writeCharToFileTXT(output, x, bitCount);
+		}
+		else {
+			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
+			writePathToFileTXT(output, nodePath, bitCount);
+		}
+		tree.updateTree(x);
+	}
+	writeCharToFileTXT(output, PSEUDO_EOF, bitCount);
+}
+
+
 /*
 void Encoder::encode(const std::string inputFile, const std::string outputFile) {
 	std::ifstream input(inputFile);
 	std::ofstream output(outputFile, std::ios::binary);
-
-}
-*/
-
-void Encoder::encode(const std::string inputFile, const std::string outputFile) {
-	std::ifstream input(inputFile);
-	std::ofstream output(outputFile, std::ios::binary);
-	char remainder{ 0 };
+	unsigned char remainder{ 0 };
 	int bitNumber{ 0 };
 	while (input.peek()) {
 		int x = int(input.get());

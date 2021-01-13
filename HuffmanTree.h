@@ -30,7 +30,7 @@ struct HuffmanTree
 	int findOrderOfBlockLeader(int orderOfCurrent);
 	void setParent(Node* node, Node* newParent);
 	void setAsBlockLeader(Node*);
-	void updateTree(int fromOrder);
+	void updateTree(int symbol);
 	void swapNodes(Node*, Node*);
 	std::vector<bool> getPathToNode(Node*);
 };

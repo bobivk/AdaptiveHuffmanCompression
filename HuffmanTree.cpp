@@ -1,5 +1,26 @@
 #include "HuffmanTree.h"
 
+void printBT1(const std::string& prefix, const Node* node, bool isLeft)
+{
+	if (node != nullptr)
+	{
+		std::cout << prefix;
+
+		std::cout << (isLeft ? "L " : "R ");
+
+		// print the value of the node
+		std::cout << node->order << "," << char(node->value) << "," << node->weight << std::endl;
+
+		// enter the next tree level - left and right branch
+		printBT1(prefix + (isLeft ? "|   " : "    "), node->left, true);
+		printBT1(prefix + (isLeft ? "|   " : "    "), node->right, false);
+	}
+}
+void printBT1(const Node* node)
+{
+	printBT1("", node, false);
+	std::cout << std::endl << std::endl;
+}
 
 HuffmanTree::HuffmanTree() {
 	root = new Node(-1, 0, nullptr, nullptr, nullptr);
@@ -31,8 +52,18 @@ void HuffmanTree::setAsBlockLeader(Node* node) {
 		swapNodes(nodes[node->order], nodes[orderOfBlockLeader]);
 	}
 }
+void printLeaves(HuffmanTree* tree) {
+	for (auto i : tree->leaves) {
+		if(i != nullptr)
+			std::cout << i->value << " ";
+	}
+	std::cout << std::endl;
+}
 
 void HuffmanTree::updateTree(int symbol) {
+	std::cout << "Updating for " << symbol << "\n";
+	printBT1(root);
+	printLeaves(this);
 	Node* current{ nullptr };
 	if (firstReadOf(symbol)) {
 		createNewNode(symbol);
@@ -79,9 +110,14 @@ void HuffmanTree::setParent(Node* node, Node* newParent) {
 }
 
 void HuffmanTree::swapNodes(Node* lhs, Node* rhs) {
+	if (lhs == nullptr || rhs == nullptr) return;
 	if (lhs == root || rhs == root) return; //we can not swap with root
 	if (lhs->parent == rhs || rhs->parent == lhs) return; //we can not swap with parent
-	//swap pointers of parents first
+
+	//update leaves vector
+	if (lhs->isLeaf()) leaves[lhs->value] = rhs;
+	if (rhs->isLeaf()) leaves[rhs->value] = lhs;
+//swap pointers of parents first
 	if (lhs->parent->left == lhs) {
 		lhs->parent->left = rhs;
 	}
@@ -106,8 +142,8 @@ void HuffmanTree::swapNodes(Node* lhs, Node* rhs) {
 	std::swap(lhs->left, rhs->left);
 	std::swap(lhs->right, rhs->right);
 	std::swap(lhs->parent, rhs->parent);
-	//we do not need to swap them in the 'nodes' or 'leaves' arrays as we already swapped everything about the nodes
-	//std::swap(nodes[lhs->order], nodes[rhs->order]);
+	
+
 	
 	/*
 	"Although the pointers must be swapped in the tree, be sure to reset the order to fit the new arrangement.

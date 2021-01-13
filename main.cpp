@@ -27,18 +27,7 @@ void printBT(const Node* node)
     cout << endl << endl;
 }
 
-int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
-    int result = orderOfCurrent;
-    for (int i = orderOfCurrent; i < 512; ++i) {
-        if (nodes[i]->weight == nodes[orderOfCurrent]->weight) {
-            result = i;
-        }
-    }
-    return result;
-}
-
-int main() {
-   
+void testTreeUpdate() {
     HuffmanTree tree;
     printBT(tree.root);
     tree.updateTree('a');
@@ -59,7 +48,25 @@ int main() {
     printBT(tree.root);
     tree.updateTree('a');
     printBT(tree.root);
+}
 
+int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
+    int result = orderOfCurrent;
+    for (int i = orderOfCurrent; i < 512; ++i) {
+        if (nodes[i]->weight == nodes[orderOfCurrent]->weight) {
+            result = i;
+        }
+    }
+    return result;
+}
+
+int main() {
+    Encoder encoder;
+    encoder.encodeToTXT("testIn1.txt", "testOut1.txt");
+
+   /*
+
+    */
     /*
     vector<Node*> nodes(520, nullptr);
     nodes[512] = new Node(34, 3, nullptr, nullptr, nullptr);
