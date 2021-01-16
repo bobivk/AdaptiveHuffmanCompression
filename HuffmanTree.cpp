@@ -50,8 +50,6 @@ void HuffmanTree::setAsBlockLeader(Node* node) {
 	int orderOfBlockLeader = findOrderOfBlockLeader(node->order);
 	//if not, swap with highest ordered node in block
 	if (orderOfBlockLeader != node->order) {
-		std::cout << "Swapping nodes " << node->order << " " << orderOfBlockLeader << "\n";
-		std::cout << "Block leader is " << orderOfBlockLeader << std::endl;
 		swapNodes(nodes[node->order], nodes[orderOfBlockLeader]);
 	}
 }
@@ -116,40 +114,40 @@ void HuffmanTree::setParent(Node* node, Node* newParent) {
 	node->parent = newParent;
 }
 
-void HuffmanTree::swapNodes(Node* lhs, Node* rhs) {
+void HuffmanTree::swapNodes(Node* left, Node* right) {
 
-	if (lhs == nullptr || rhs == nullptr) return;
-	if (lhs == root || rhs == root) return; //we can not swap with root
-	if (lhs->parent == rhs || rhs->parent == lhs) return; //we can not swap with parent
+	if (left == nullptr || right == nullptr) return;
+	if (left == root || right == root) return; //we can not swap with root
+	if (left->parent == right || right->parent == left) return; //we can not swap with parent
 
 	//update leaves vector
-	if (lhs->isLeaf()) leaves[lhs->value] = rhs;
-	if (rhs->isLeaf()) leaves[rhs->value] = lhs;
+	if (left->isLeaf()) leaves[left->value] = right;
+	if (right->isLeaf()) leaves[right->value] = left;
 //swap pointers of parents first
-	if (lhs->parent->left == lhs) {
-		lhs->parent->left = rhs;
+	if (left->parent->left == left) {
+		left->parent->left = right;
 	}
 	else {
-		lhs->parent->right = rhs;
+		left->parent->right = right;
 	}
-	if (rhs->parent->left == lhs) {
-		rhs->parent->left = lhs;
+	if (right->parent->left == right) {
+		right->parent->left = left;
 	}
 	else {
-		rhs->parent->right = lhs;
+		right->parent->right = left;
 	}
 	//swap pointers of children
-	setParent(lhs->left, rhs);
-	setParent(lhs->right, rhs);
-	setParent(rhs->left, lhs);
-	setParent(rhs->right, lhs);
+	setParent(left->left, right);
+	setParent(left->right, right);
+	setParent(right->left, left);
+	setParent(right->right, left);
 
 	//swap all values
-	std::swap(lhs->value, rhs->value);
-	std::swap(lhs->weight, rhs->weight);
-	std::swap(lhs->left, rhs->left);
-	std::swap(lhs->right, rhs->right);
-	std::swap(lhs->parent, rhs->parent);
+	std::swap(left->value, right->value);
+	std::swap(left->weight, right->weight);
+	std::swap(left->left, right->left);
+	std::swap(left->right, right->right);
+	std::swap(left->parent, right->parent);
 	
 
 	

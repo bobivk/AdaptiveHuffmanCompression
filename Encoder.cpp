@@ -101,7 +101,7 @@ void Encoder::encodeToTXT(std::istream& input, std::ostream& output) {
 		}
 		tree.updateTree(x);
 	}
-	writeCharToFileTXT(output, PSEUDO_EOF, bitCount);
+	//writeCharToFileTXT(output, PSEUDO_EOF, bitCount);
 }
 
 

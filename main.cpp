@@ -47,6 +47,39 @@ void testTreeUpdate() {
     tree.updateTree('k');
     printBT(tree.root);
 }
+void printLeaves1(HuffmanTree* tree) {
+    for (auto i : tree->leaves) {
+        if (i != nullptr)
+            std::cout << i->value << " ";
+    }
+    std::cout << std::endl;
+}
+
+void testNodeSwap() {
+    HuffmanTree tree;
+    tree.updateTree('a');
+
+    tree.updateTree('a');
+
+    tree.updateTree('r');
+
+    tree.updateTree('d');
+
+    tree.updateTree('v');
+
+    tree.updateTree('a');
+
+    tree.updateTree('r');
+
+    tree.updateTree('k');
+    tree.root->left->weight++;
+    printBT(tree.root);
+    printLeaves1(&tree);
+    std::cout << "-------------------------" << std::endl;
+    tree.swapNodes(tree.root->left, tree.root->right);
+    printBT(tree.root);
+    printLeaves1(&tree);
+}
 
 int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
     int result = orderOfCurrent;
@@ -59,17 +92,16 @@ int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
 }
 
 int main() {
-    std::ifstream textencode("testIn2.txt");
-    std::ofstream huffcodeencode("testOut2.txt");
-    std::ifstream textdecode("asdf.txt");
-    std::ofstream huffcodedecode("testInB.txt");
-    Encoder encoder;
+   // std::ifstream textIn("testIn2.txt");
+    //std::ofstream codeOut("testOut2.txt");
+    std::ifstream codeIn("testOut2.txt");
+    std::ofstream textOut("testInB.txt");
+    //testNodeSwap();
+    //Encoder encoder;
     Decoder decoder;
     //cout << decoder.decodeCharTXT(input);
-    encoder.encodeToTXT(textencode, huffcodeencode);
-    //textencode.close();
-    //huffcodedecode.close();
-   decoder.decodeTXT(textdecode, huffcodedecode);
+    //encoder.encodeToTXT(textIn, codeOut);
+    decoder.decodeTXT(codeIn, textOut);
    /*
 
     */
