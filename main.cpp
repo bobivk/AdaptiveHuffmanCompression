@@ -46,8 +46,6 @@ void testTreeUpdate() {
     printBT(tree.root);
     tree.updateTree('k');
     printBT(tree.root);
-    tree.updateTree('a');
-    printBT(tree.root);
 }
 
 int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
@@ -61,9 +59,17 @@ int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
 }
 
 int main() {
+    std::ifstream textencode("testIn2.txt");
+    std::ofstream huffcodeencode("testOut2.txt");
+    std::ifstream textdecode("asdf.txt");
+    std::ofstream huffcodedecode("testInB.txt");
     Encoder encoder;
-    encoder.encodeToTXT("testIn1.txt", "testOut1.txt");
-
+    Decoder decoder;
+    //cout << decoder.decodeCharTXT(input);
+    encoder.encodeToTXT(textencode, huffcodeencode);
+    //textencode.close();
+    //huffcodedecode.close();
+   decoder.decodeTXT(textdecode, huffcodedecode);
    /*
 
     */

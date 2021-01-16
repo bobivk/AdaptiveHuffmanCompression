@@ -25,11 +25,7 @@ struct Node
 	Node* right;
 	Node* parent;
 
-	static int LOWEST_ORDER;
-	Node();
-	Node(int _value, int _weight, Node* l, Node* r, Node* p);
-	Node* getSibling();
-	int getWeightOfSibling();
+	Node(int _value, int _weight, unsigned LOWEST_ORDER, Node* l, Node* r, Node* p);
 	bool isLeaf();
 	bool isInner();
 	bool isLeftChild();

@@ -58,7 +58,55 @@ void Decoder::decode(std::string inputFile, std::string outputFile) {
 	// 01100101
 	//
 }
+//read next 8 bits, convert to char
+unsigned char Decoder::decodeCharTXT(std::istream& in) {
+	unsigned char result{ 0 };
+	int bit{ 0 };
+	for (int i = 0; i < 8; ++i) {
+		bit = in.get();
+		std::cout << "bit is "  << char(bit) <<  std::endl;
+		result <<= 1;
+		if (bit == '1') {
+			//std::cout << "adding 1" << std::endl;
+			result |= 1;
+		}
+		//std::cout << "shifting " << std::endl << std::endl;
+	}
+	std::cout << "decoded " << char(result) << std::endl;
+	return result;
+}
 
+void Decoder::decodeTXT(std::istream& in, std::ostream& out) {
+	Node* current = tree.root;
+	while (in.peek() != EOF) {
+		std::cout << "current is " << current->order << std::endl;
+		if (current->isLeaf()) {
+			unsigned char toPrint{ 0 };
+			if (current == tree.NYTNode){
+				std::cout << "reached NYT node " << current->order << std::endl;
+				toPrint = decodeCharTXT(in);
+			}
+			else {
+				if (current != nullptr) {
+					toPrint = current->value;
+				}
+			}
+			out << toPrint;
+			tree.updateTree(toPrint);
+			current = tree.root;
+		}
+		else {
+			if (current != nullptr) {
+				int nextBit = in.get();
+				std::cout << "read " << char(nextBit) << std::endl;
+				if (nextBit == '0') {
+					current = current->left;
+				}
+				else current = current->right;
+			}
+		}
+	}
+}
 
 /*
 void getPathFromFile(std::vector<bool>& path, std::stack<bool>& st, std::ifstream& input, char& byte, int& bitNumber) {

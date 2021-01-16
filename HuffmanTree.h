@@ -24,6 +24,8 @@ struct HuffmanTree
 	std::vector<Node*> leaves;//leaves indexed by char value
 	std::vector<Node*> nodes; //all nodes indexed by order - 256 leaves + 255 internal nodes
 	
+	static unsigned LOWEST_NODE_ORDER;
+
 	HuffmanTree();
 	void createNewNode(int symbol);
 	bool firstReadOf(int symbol);

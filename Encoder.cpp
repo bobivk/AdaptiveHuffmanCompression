@@ -1,7 +1,7 @@
 #include"Encoder.h"
 
 
-void Encoder::writeBitsetToFile(std::vector<bool>* path, std::ofstream& out, unsigned char& byte, int& bitNumber) {
+void Encoder::writeBitsetToFile(std::vector<bool>* path, std::ostream& out, unsigned char& byte, int& bitNumber) {
 	for (int i = bitNumber; i < path->size(); ++i) {
 		if (bitNumber != 0 && bitNumber % 8 == 0) {
 			out.write((char*)byte, 8);
@@ -58,34 +58,34 @@ void Encoder::encode(const std::string inputFile, const std::string outputFile) 
 	delete bitset;
 }
 
-void Encoder::writePathToFileTXT(std::ofstream& out, std::vector<bool>& path, int& bitCount) {
+void Encoder::writePathToFileTXT(std::ostream& out, std::vector<bool>& path, int& bitCount) {
 	if (bitCount == 8) {
-		out << " ";
+		//out << " ";
 		bitCount = 0;
 	}
 	for (auto i : path) {
 		out << i;
+		//++bitCount;
 	}
 }
-void Encoder::writeCharToFileTXT(std::ofstream& out, unsigned char x, int& bitCount) {
+void Encoder::writeCharToFileTXT(std::ostream& out, unsigned char x, int& bitCount) {
 	std::stack<bool> stack;
 	for (int i = 0; i < 8; ++i) {
 		stack.push((x >> i) & 1);
 	}
 	for (int i = 0; i < 8; ++i) {
 		if (bitCount == 8) {
-			out << " ";
+			//out << " ";
 			bitCount = 0;
 		}
 		out << stack.top();
 		stack.pop();
+		//++bitCount;
 	}
 }
 
 
-void Encoder::encodeToTXT(const std::string inputFile, const std::string outputFile) {
-	std::ifstream input(inputFile);
-	std::ofstream output(outputFile, std::ios::trunc);
+void Encoder::encodeToTXT(std::istream& input, std::ostream& output) {
 
 	int bitCount = 0;
 	while (input.peek() != EOF) {
@@ -194,4 +194,4 @@ void Encoder::encode(const std::string inputFile, const std::string outputFile) 
 		findBlockLeader(current->left, max);
 		findBlockLeader(current->right, max);
 	}
-	*/
+*/

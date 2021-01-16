@@ -1,5 +1,7 @@
 #include "HuffmanTree.h"
 
+unsigned HuffmanTree::LOWEST_NODE_ORDER{ 512 };
+
 void printBT1(const std::string& prefix, const Node* node, bool isLeft)
 {
 	if (node != nullptr)
@@ -23,7 +25,8 @@ void printBT1(const Node* node)
 }
 
 HuffmanTree::HuffmanTree() {
-	root = new Node(-1, 0, nullptr, nullptr, nullptr);
+	root = new Node(-1, 0, LOWEST_NODE_ORDER, nullptr, nullptr, nullptr);
+	--LOWEST_NODE_ORDER;
 	NYTNode = root;
 	nodes = std::vector<Node*>(513, nullptr);
 	leaves = std::vector<Node*>(257, nullptr);
@@ -33,13 +36,13 @@ HuffmanTree::HuffmanTree() {
 //       506    508 509 510 511 512 
 
 int HuffmanTree::findOrderOfBlockLeader(int orderOfCurrent) {
-	int result = orderOfCurrent;
-	for (int i = orderOfCurrent; i < 512; ++i) {
+	
+	for (int i = orderOfCurrent + 1; i < 512; ++i) {
 		if (nodes[i]->weight == nodes[orderOfCurrent]->weight) {
-			result = i;
+			orderOfCurrent = i;
 		}
 	}
-	return result;
+	return orderOfCurrent;
 
 }
 
@@ -62,8 +65,6 @@ void printLeaves(HuffmanTree* tree) {
 
 void HuffmanTree::updateTree(int symbol) {
 	std::cout << "Updating for " << symbol << "\n";
-	printBT1(root);
-	printLeaves(this);
 	Node* current{ nullptr };
 	if (firstReadOf(symbol)) {
 		createNewNode(symbol);
@@ -80,6 +81,8 @@ void HuffmanTree::updateTree(int symbol) {
 		std::cout << "Incrementing weight of " << current->order << std::endl;
 		++current->weight;
 	}
+	printBT1(root);
+	printLeaves(this);
 }
 
 
@@ -90,10 +93,14 @@ void HuffmanTree::updateTree(int symbol) {
 void HuffmanTree::createNewNode(int symbol) {
 	NYTNode->weight++;
 	//creates the NYT node last so correct ordering is maintained
-	Node* newLeaf = new Node(symbol, 1, nullptr, nullptr, NYTNode);
+	Node* newLeaf = new Node(symbol, 1, LOWEST_NODE_ORDER, nullptr, nullptr, NYTNode);
+	--LOWEST_NODE_ORDER;
 	nodes[newLeaf->order] = newLeaf;
-	Node* newNYT = new Node(-1, 0, nullptr, nullptr, NYTNode);
+	std::cout << "create leaf " << newLeaf->order;
+	Node* newNYT = new Node(-1, 0, LOWEST_NODE_ORDER, nullptr, nullptr, NYTNode);
+	--LOWEST_NODE_ORDER;
 	nodes[newNYT->order] = newNYT;
+	std::cout << "create NYT " << newNYT->order << '\n';
 	NYTNode->right = newLeaf;
 	NYTNode->left = newNYT;
 	NYTNode = newNYT;
@@ -110,6 +117,7 @@ void HuffmanTree::setParent(Node* node, Node* newParent) {
 }
 
 void HuffmanTree::swapNodes(Node* lhs, Node* rhs) {
+
 	if (lhs == nullptr || rhs == nullptr) return;
 	if (lhs == root || rhs == root) return; //we can not swap with root
 	if (lhs->parent == rhs || rhs->parent == lhs) return; //we can not swap with parent
