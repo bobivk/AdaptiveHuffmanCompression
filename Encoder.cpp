@@ -1,5 +1,33 @@
 #include"Encoder.h"
 
+void printBT1(const std::string& prefix, const Node* node, bool isLeft)
+{
+	if (node != nullptr)
+	{
+		std::cout << prefix;
+
+		std::cout << (isLeft ? "L " : "R ");
+
+		// print the value of the node
+		std::cout << node->order << "," << char(node->value) << "," << node->weight << std::endl;
+
+		// enter the next tree level - left and right branch
+		printBT1(prefix + (isLeft ? "|   " : "    "), node->left, true);
+		printBT1(prefix + (isLeft ? "|   " : "    "), node->right, false);
+	}
+}
+void printBT1(const Node* node)
+{
+	printBT1("", node, false);
+	std::cout << std::endl << std::endl;
+}
+void printLeaves(HuffmanTree* tree) {
+	for (auto i : tree->leaves) {
+		if (i != nullptr)
+			std::cout << i->value << " ";
+	}
+	std::cout << std::endl;
+}
 
 void Encoder::writeBitsetToFile(std::vector<bool>* path, std::ostream& out, unsigned char& byte, int& bitNumber) {
 	for (int i = bitNumber; i < path->size(); ++i) {
@@ -16,7 +44,6 @@ void Encoder::writeBitsetToFile(std::vector<bool>* path, std::ostream& out, unsi
 void Encoder::addToBitset(std::vector<bool>* bitset, std::vector<bool>& path) {
 	bitset->insert(std::end(*bitset), std::begin(path), std::end(path));
 }
-
 void Encoder::addToBitset(std::vector<bool> *bitset, int x) {
 	std::stack<bool> stack;
 	for (int i = 0; i < 8; ++i) {
@@ -27,16 +54,14 @@ void Encoder::addToBitset(std::vector<bool> *bitset, int x) {
 		stack.pop();
 	}
 }
-
-
 void Encoder::encode(const std::string inputFile, const std::string outputFile) {
 	std::ifstream input(inputFile);
 	std::ofstream output(outputFile, std::ios::binary);
 	auto bitset = new std::vector<bool>();
 
 	while(input.peek()){
-
 		unsigned char x = input.get();
+		textSize += 8;
 		if (tree.firstReadOf(x)) {
 			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
 			addToBitset(bitset, NYTpath);
@@ -58,52 +83,53 @@ void Encoder::encode(const std::string inputFile, const std::string outputFile) 
 	delete bitset;
 }
 
-void Encoder::writePathToFileTXT(std::ostream& out, std::vector<bool>& path, int& bitCount) {
-	if (bitCount == 8) {
-		//out << " ";
-		bitCount = 0;
-	}
+void Encoder::writePathToFileTXT(std::ostream& out, std::vector<bool>& path) {
 	for (auto i : path) {
 		out << i;
-		//++bitCount;
 	}
 }
-void Encoder::writeCharToFileTXT(std::ostream& out, unsigned char x, int& bitCount) {
+void Encoder::writeCharToFileTXT(std::ostream& out, unsigned char x) {
 	std::stack<bool> stack;
 	for (int i = 0; i < 8; ++i) {
 		stack.push((x >> i) & 1);
 	}
 	for (int i = 0; i < 8; ++i) {
-		if (bitCount == 8) {
-			//out << " ";
-			bitCount = 0;
-		}
 		out << stack.top();
 		stack.pop();
-		//++bitCount;
 	}
 }
 
 
 void Encoder::encodeToTXT(std::istream& input, std::ostream& output) {
-
-	int bitCount = 0;
 	while (input.peek() != EOF) {
 		unsigned char x = input.get();
+		textSize += 8;
 		if (tree.firstReadOf(x)) {
 			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
-			writePathToFileTXT(output, NYTpath, bitCount);
-			writeCharToFileTXT(output, x, bitCount);
+			writePathToFileTXT(output, NYTpath);
+			writeCharToFileTXT(output, x);
+			codeSize += NYTpath.size();
+			codeSize += 8;
 		}
 		else {
 			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
-			writePathToFileTXT(output, nodePath, bitCount);
+			writePathToFileTXT(output, nodePath);
+			codeSize += nodePath.size();
 		}
 		tree.updateTree(x);
 	}
-	//writeCharToFileTXT(output, PSEUDO_EOF, bitCount);
+	std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
+	writePathToFileTXT(output, NYTpath);
+	writeCharToFileTXT(output, PSEUDO_EOF);
+	printBT1(tree.root);
+	printLeaves(&tree);
+	std::cout << "Compression rate is: " << getCompressionRate() << std::endl;
+
 }
 
+double Encoder::getCompressionRate() {
+	return (double) codeSize / (double) textSize;
+}
 
 /*
 void Encoder::encode(const std::string inputFile, const std::string outputFile) {
@@ -136,62 +162,4 @@ void Encoder::encode(const std::string inputFile, const std::string outputFile) 
 }
 
 
-/*
-	Node* findNodeOf(int x) {
-		auto foundNode = leaves.find(x);
-		if (foundNode == leaves.end()) {
-			return NYTNode;
-		}
-		else return foundNode->second;
-	}
-
-	void slideAndIncrement(Node* current) {
-		if (current == nullptr) return;
-		Node* blockLeader = current;
-		//findBlockLeader(root, current);
-		if (blockLeader != current) {
-			//swapNodes(blockLeader, current);
-		}
-		++current->weight;
-		slideAndIncrement(current->parent);
-	}
-	void addCharToTree(char x) {
-		Node* nodeOfX = findNodeOf(x);
-		if (nodeOfX == NYTNode) {
-			Node* newParent = new Node('\0', 1, 3, false, NYTNode, nullptr, NYTNode->parent);
-			newParent->left = NYTNode;
-			//create a node for x
-			Node* newNode = new Node(x, 1, 2, false, nullptr, nullptr, newParent);
-			newParent->right = newNode;
-			leaves.insert({ x, newNode });
-		}
-		else {
-			nodeOfX->weight++;
-		}
-		updateTree(nodeOfX);
-	}
-	/*
-	void updateTree() {
-		Node* current = nullNode->parent;
-		while (current != huffRoot) {
-			current->weight++;
-			if (current->weight > current->getWeightOfSibling()) {
-				swapNodes(current, current->getSibling());
-			}
-			if (current->weight > current->parent->weight) {
-				swapNodes(current, current->parent);
-			}
-		}
-	}*/
-	/*
-	void findBlockLeader(Node* current, Node*& max)  {
-		if (current == nullptr || max == root) return;
-		if (current->weight == max->weight &&
-			current != max->parent &&
-			current->order > max->order) {
-			max = current;
-		}
-		findBlockLeader(current->left, max);
-		findBlockLeader(current->right, max);
-	}
 */

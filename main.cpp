@@ -91,30 +91,58 @@ int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
     return result;
 }
 
-int main() {
-   // std::ifstream textIn("testIn2.txt");
+void encode(const char* inFile, const char* outFile) {
+    Encoder encoder;
+    std::ifstream textIn (inFile);
+    std::ofstream codeOut(outFile);
+    encoder.encodeToTXT(textIn, codeOut);
+    textIn.close();
+    codeOut.close();
+}
+
+void decode(const char* inFile, const char* outFile) {
+    Decoder decoder;
+    std::ifstream codeIn(inFile);
+    std::ofstream textOut(outFile);
+    decoder.decodeTXT(codeIn, textOut);
+    codeIn.close();
+    textOut.close();
+}
+
+int main1(int argc, char* argv[]) {
+    //std::ifstream textIn("testIn2.txt");
     //std::ofstream codeOut("testOut2.txt");
-    std::ifstream codeIn("testOut2.txt");
-    std::ofstream textOut("testInB.txt");
+    //std::ifstream codeIn("testOut2.txt");
+    //std::ofstream textOut("testInB.txt");
     //testNodeSwap();
     //Encoder encoder;
-    Decoder decoder;
+    //Decoder decoder;
     //cout << decoder.decodeCharTXT(input);
     //encoder.encodeToTXT(textIn, codeOut);
-    decoder.decodeTXT(codeIn, textOut);
-   /*
+    //decoder.decodeTXT(codeIn, textOut);
 
-    */
-    /*
-    vector<Node*> nodes(520, nullptr);
-    nodes[512] = new Node(34, 3, nullptr, nullptr, nullptr);
-    nodes[511] = new Node(35, 2, nullptr, nullptr, nullptr);
-    nodes[510] = new Node(36, 2, nullptr, nullptr, nullptr);
-    nodes[509] = new Node(37, 2, nullptr, nullptr, nullptr);
-    nodes[508] = new Node(38, 1, nullptr, nullptr, nullptr);
-    nodes[507] = new Node(39, 1, nullptr, nullptr, nullptr);
-    nodes[506] = new Node(40, 1, nullptr, nullptr, nullptr);
-    cout << findOrderOfBlockLeader(nodes, 506);
-    */
-	return 0;
+
+    if (!(argv[2][0] == '-') && (argv[2][1] == 'i') && !(argv[2][0] == '-') && (argv[2][1] == 'o'))
+    {
+        cout << "type: Huffman -c[ompress] | -d[ecompress]] -i <inputfile> -o <outputfile>" << endl;
+        return 0;
+    }
+    if ((argv[1][0] == '-') && (argv[1][1] == 'c')) {
+        encode(argv[3], argv[5]);
+    }
+    if ((argv[1][0] == '-') && (argv[1][1] == 'd')) {
+        decode(argv[3], argv[5]);
+    }
+
+    return 0;
+}
+int main() {
+    encode("testIn1.txt", "testOut1.txt");
+    //encode("1984.txt", "1984code.txt");
+
+    //decode("1984code.txt", "1984decoded.txt");
+    
+    //testTreeUpdate();
+    //encode("testIn2.txt", "1984code.txt");
+    return 0;
 }
