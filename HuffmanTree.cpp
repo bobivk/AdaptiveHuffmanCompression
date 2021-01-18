@@ -104,7 +104,7 @@ void HuffmanTree::swapNodes(Node* left, Node* right) {
 	if (left == nullptr || right == nullptr) return;
 	if (left == root || right == root) return; //we can not swap with root
 	if (left->parent == right || right->parent == left) return; //we can not swap with parent
-	std::cout << "swapping " << left->order << " with " << right->order << std::endl;
+	//std::cout << "swapping " << left->order << " with " << right->order << std::endl;
 	//update leaves vector
 	if (left->isLeaf()) leaves[left->value] = right;
 	if (right->isLeaf()) leaves[right->value] = left;

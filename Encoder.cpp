@@ -103,63 +103,21 @@ void Encoder::writeCharToFileTXT(std::ostream& out, unsigned char x) {
 void Encoder::encodeToTXT(std::istream& input, std::ostream& output) {
 	while (input.peek() != EOF) {
 		unsigned char x = input.get();
-		textSize += 8;
 		if (tree.firstReadOf(x)) {
 			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
 			writePathToFileTXT(output, NYTpath);
 			writeCharToFileTXT(output, x);
-			codeSize += NYTpath.size();
-			codeSize += 8;
 		}
 		else {
 			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
 			writePathToFileTXT(output, nodePath);
-			codeSize += nodePath.size();
 		}
 		tree.updateTree(x);
 	}
 	std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
 	writePathToFileTXT(output, NYTpath);
 	writeCharToFileTXT(output, PSEUDO_EOF);
+
 	printBT1(tree.root);
 	printLeaves(&tree);
-	std::cout << "Compression rate is: " << getCompressionRate() << std::endl;
-
 }
-
-double Encoder::getCompressionRate() {
-	return (double) codeSize / (double) textSize;
-}
-
-/*
-void Encoder::encode(const std::string inputFile, const std::string outputFile) {
-	std::ifstream input(inputFile);
-	std::ofstream output(outputFile, std::ios::binary);
-	unsigned char remainder{ 0 };
-	int bitNumber{ 0 };
-	while (input.peek()) {
-		int x = int(input.get());
-		if (tree.firstReadOf(x)) {
-			//output NYT path followed by x in binary
-			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
-			writePathToFile(NYTpath, output, remainder, bitNumber);
-			output.write((const char*)x, sizeof(x));
-		}
-		else {
-			//output path to the leaf of x
-			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
-			writePathToFile(nodePath, output, remainder, bitNumber);
-		}
-		tree.updateTree(x);
-	}
-	if (remainder) {
-		for (int i = 0; i < (8 - bitNumber); ++i) {
-			remainder <<= 1;
-		}
-		output.write((char*)remainder, sizeof(remainder));
-		output.write((char*)PSEUDO_EOF, sizeof(PSEUDO_EOF));
-	}
-}
-
-
-*/
