@@ -6,6 +6,8 @@
 #include"HuffmanTree.h"
 struct Encoder {
 	HuffmanTree tree;
+	int textSize{ 0 };
+	int codeSize{ 0 };
 
 	void writeBitsetToFile(std::vector<bool>* path, std::ostream& out, unsigned char& byte, int& bitNumber);
 	void addToBitset(std::vector<bool>* bitset, std::vector<bool>&);

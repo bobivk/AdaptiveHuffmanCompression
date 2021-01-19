@@ -54,6 +54,8 @@ void HuffmanTree::setAsBlockLeader(Node* node) {
 
 
 void HuffmanTree::updateTree(int symbol) {
+	using namespace std;
+	//cout << "update for " << char(symbol) << endl;
 	Node* current{ nullptr };
 	if (firstReadOf(symbol)) {
 		createNewNode(symbol);
@@ -62,14 +64,18 @@ void HuffmanTree::updateTree(int symbol) {
 	else {
 		current = leaves[symbol];//go to symbol external node
 		setAsBlockLeader(current);
+		//cout << "incrementing " << current->order << endl;
 		++current->weight;
 	}
-	while (current != root) {//Is this root node
-		current = current->parent; //go to parent
+	while (current != root) {
+		current = current->parent; 
+		//cout << "go to parent "<< current->order << endl;
 		setAsBlockLeader(current);
+		//cout << "increment " << current->order << endl;
 		++current->weight;
 	}
-	printBTt(root);
+	//printBTt(root);
+
 }
 
 //Creates new NYT on the left of old NYT
@@ -105,42 +111,32 @@ void HuffmanTree::swapNodes(Node* left, Node* right) {
 	if (left == root || right == root) return; //we can not swap with root
 	if (left->parent == right || right->parent == left) return; //we can not swap with parent
 	//std::cout << "swapping " << left->order << " with " << right->order << std::endl;
-	//update leaves vector
-	if (left->isLeaf()) leaves[left->value] = right;
-	if (right->isLeaf()) leaves[right->value] = left;
-//swap pointers of parents first
-	if (left->parent->left == left) {
+
+	nodes[left->order] = right;
+	nodes[right->order] = left;
+
+	if (left->parent == right->parent) {
+		left->parent->right = left;
 		left->parent->left = right;
 	}
 	else {
-		left->parent->right = right;
+		if (left->parent->left == left) {
+			left->parent->left = right;
+		}
+		else {
+			left->parent->right = right;
+		}
+		if (right->parent->left == right) {
+			right->parent->left = left;
+		}
+		else {
+			right->parent->right = left;
+		}
+		std::swap(left->parent, right->parent);
 	}
-	if (right->parent->left == right) {
-		right->parent->left = left;
-	}
-	else {
-		right->parent->right = left;
-	}
-	//swap pointers of children
-	setParent(left->left, right);
-	setParent(left->right, right);
-	setParent(right->left, left);
-	setParent(right->right, left);
-
-	//swap all values
-	std::swap(left->value, right->value);
-	std::swap(left->weight, right->weight);
-	std::swap(left->left, right->left);
-	std::swap(left->right, right->right);
-	std::swap(left->parent, right->parent);
+	std::swap(left->order, right->order);
 	
-
-	
-	/*
-	"Although the pointers must be swapped in the tree, be sure to reset the order to fit the new arrangement.
-	The orders of the two swapped nodes should not be swapped- or if they are, should be re-swapped.
-	Order is not a measure related to the value in a node- it is related to that node's position in the tree."
-	*/
+	//we do not need to swap the weight since nodes are of equal weight
 }
 void reversePath(std::vector<bool>& path) {
 	int n = path.size();

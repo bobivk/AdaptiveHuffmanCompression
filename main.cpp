@@ -47,13 +47,6 @@ void testTreeUpdate() {
     tree.updateTree('k');
     printBT(tree.root);
 }
-void printLeaves1(HuffmanTree* tree) {
-    for (auto i : tree->leaves) {
-        if (i != nullptr)
-            std::cout << i->value << " ";
-    }
-    std::cout << std::endl;
-}
 
 void testNodeSwap() {
     HuffmanTree tree;
@@ -72,24 +65,12 @@ void testNodeSwap() {
     tree.updateTree('r');
 
     tree.updateTree('k');
-    tree.root->left->weight++;
     printBT(tree.root);
-    printLeaves1(&tree);
     std::cout << "-------------------------" << std::endl;
-    tree.swapNodes(tree.root->left, tree.root->right);
+    tree.swapNodes(tree.root->left->left , tree.root->right);
     printBT(tree.root);
-    printLeaves1(&tree);
 }
 
-int findOrderOfBlockLeader(vector<Node*>& nodes, int orderOfCurrent) {
-    int result = orderOfCurrent;
-    for (int i = orderOfCurrent; i < 512; ++i) {
-        if (nodes[i]->weight == nodes[orderOfCurrent]->weight) {
-            result = i;
-        }
-    }
-    return result;
-}
 
 void encode(const char* inFile, const char* outFile) {
     Encoder encoder;
@@ -137,12 +118,14 @@ int main1(int argc, char* argv[]) {
     return 0;
 }
 int main() {
-    encode("testIn1.txt", "testOut1.txt");
-    //encode("1984.txt", "1984code.txt");
-
+    //testNodeSwap();
+    //encode("aardvIn.txt", "aardvCode2.txt");
+    //decode("aardvCode2.txt", "aardvOut.txt");
+    //encode("ABRACADABRA.txt", "ABRACADABRAcode.txt");
+    //decode("ABRACADABRAcode.txt", "ABRACADABRAdecoded.txt");
+    //encode("loremipsum.txt", "loremipsumcode.txt");
+    encode("1984.txt", "1984code.txt");
     //decode("1984code.txt", "1984decoded.txt");
-    
-    //testTreeUpdate();
-    //encode("testIn2.txt", "1984code.txt");
+
     return 0;
 }

@@ -22,9 +22,13 @@ void printBT1(const Node* node)
 	std::cout << std::endl << std::endl;
 }
 void printLeaves(HuffmanTree* tree) {
+	for (auto i : tree->nodes) {
+		if(i != nullptr) std::cout << i->order << ',' << i->value << ',' << i->weight << " | ";
+	}
+	std::cout << std::endl;
 	for (auto i : tree->leaves) {
 		if (i != nullptr)
-			std::cout << i->value << " ";
+			std::cout << char(i->value) << " ";
 	}
 	std::cout << std::endl;
 }
@@ -61,7 +65,6 @@ void Encoder::encode(const std::string inputFile, const std::string outputFile) 
 
 	while(input.peek()){
 		unsigned char x = input.get();
-		textSize += 8;
 		if (tree.firstReadOf(x)) {
 			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
 			addToBitset(bitset, NYTpath);
@@ -103,14 +106,18 @@ void Encoder::writeCharToFileTXT(std::ostream& out, unsigned char x) {
 void Encoder::encodeToTXT(std::istream& input, std::ostream& output) {
 	while (input.peek() != EOF) {
 		unsigned char x = input.get();
+		textSize += 8;
 		if (tree.firstReadOf(x)) {
 			std::vector<bool> NYTpath = tree.getPathToNode(tree.NYTNode);
 			writePathToFileTXT(output, NYTpath);
 			writeCharToFileTXT(output, x);
+			codeSize += NYTpath.size();
+			codeSize += 8;
 		}
 		else {
 			std::vector<bool> nodePath = tree.getPathToNode(tree.leaves[x]);
 			writePathToFileTXT(output, nodePath);
+			codeSize += nodePath.size();
 		}
 		tree.updateTree(x);
 	}
@@ -118,6 +125,6 @@ void Encoder::encodeToTXT(std::istream& input, std::ostream& output) {
 	writePathToFileTXT(output, NYTpath);
 	writeCharToFileTXT(output, PSEUDO_EOF);
 
-	printBT1(tree.root);
-	printLeaves(&tree);
+	std::cout << "code size: " << codeSize/8 << " bytes, text: " << textSize/8 << " bytes"<< std::endl;
+	std::cout << "compression rate is: " << (1 - (double)codeSize / (double)textSize)*100 << '%' << std::endl;
 }
